@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitoring Salinitas Laut - Real-Time</title>
+  <link rel="icon" href="logo-itb.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #e0f2fe, #ffffff);
+      color: #1e3a8a;
+    }
+    header {
+      background-color: #1e40af;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo img {
+      width: 64px;
+      height: 64px;
+    }
+    .logo h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    nav {
+      margin-top: 10px;
+    }
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      padding: 30px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+    .summary {
+      background: #eff6ff;
+      border-left: 6px solid #1e40af;
+      padding: 16px;
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1e3a8a;
+      color: white;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="images/LOGOITB.png" alt="Logo ITB" />
+      <h1>Monitoring Salinitas Laut<br><small>Real-Time | Kelompok 5 PRD PRODI OSEANOGRAFI ITB</small></h1>
+    </div>
+    <nav>
+      <a href="#grafik">Grafik</a>
+      <a href="#kesimpulan">Kesimpulan</a>
+      <a href="#tentang">Tentang</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card" id="grafik">
+      <h2>Grafik Salinitas Laut (Real-Time)</h2>
+      <canvas id="salinityChart" width="1000" height="400"></canvas>
+    </div>
+
+    <div class="card summary" id="kesimpulan">
+      <h3>Kesimpulan</h3>
+      <p id="summaryText">Menunggu data...</p>
+    </div>
+
+    <div class="card" id="tentang">
+      <h3>Tentang Proyek</h3>
+      <p>
+        Proyek ini merupakan bagian dari tugas mata kuliah Pengenalan Rekayasa dan Desain (PRD) ITB 2025 oleh Kelompok 5.
+        Sistem ini menampilkan simulasi pemantauan salinitas laut secara real-time dengan data yang terus diperbarui.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Kelompok 5 - ITB. Versi real-time simulatif. Data dapat diintegrasikan dengan sensor IoT atau API.
+  </footer>
+
+  <script>
+    const ctx = document.getElementById('salinityChart').getContext('2d');
+
+    const timestamps = [];
+    const values = [];
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: timestamps,
+        datasets: [{
+          label: 'Salinitas Real-Time (ppt)',
+          data: values,
+          fill: false,
+          borderColor: '#1d4ed8',
+          tension: 0.3,
+          pointBackgroundColor: '#1d4ed8',
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: 'Salinitas (ppt)'
+            },
+            suggestedMin: 30,
+            suggestedMax: 35
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Waktu'
+            }
+          }
+        }
+      }
+    });
+
+    function generateSimulatedData() {
+      const now = new Date();
+      const timeLabel = now.toLocaleTimeString();
+      const value = (31.5 + Math.random() * 2).toFixed(2);
+
+      timestamps.push(timeLabel);
+      values.push(parseFloat(value));
+
+      if (timestamps.length > 20) {
+        timestamps.shift();
+        values.shift();
+      }
+
+      chart.update();
+
+      const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2);
+      document.getElementById("summaryText").innerHTML = `
+        Salinitas saat ini: <b>${value} ppt</b>.<br>
+        Rata-rata dari 20 pengukuran terakhir: <b>${avg} ppt</b>.
+      `;
+    }
+
+    setInterval(generateSimulatedData, 5000); // update setiap 5 detik
+  </script>
+</body>
+</html>
